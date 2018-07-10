@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html charset='utf-8' lang="en">
   <head>
     <meta content="initial-scale=1, width=device-width" name="viewport"/>
     <title>{% block title %}{% endblock %}</title>
@@ -7,60 +7,12 @@
     <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-csv/0.71/jquery.csv-0.71.min.js"></script>
     <script>
-      var truth = -1;
-      var nRight = 0;
-      var nWrong = 0;
-      var acc = 0;
-      var line= "";
-      function guessReal() {
-        if (truth == 1) {
-          $('#ans-status').html("Correct - Nice");
-          nRight+=1;
-          getComment();
-        } else {
-          $('#ans-status').html("Wrong, that was actually a fake comment.");
-          nWrong+=1;
-          getComment();
-        }
-      }
-      function guessFake() {
-        if (truth == 0) {
-          $('#ans-status').html("Correct - Nice");
-          nRight+=1;
-          getComment();
-        } else {
-          $('#ans-status').html("Wrong, that was a real comment.");
-          nWrong+=1;
-          getComment();
-        }
-      }
-      function resetScore() {
-        nRight = 0;
-        nWrong = 0;
-        acc = getAccuracy(nRight, nWrong);
-        updateScore();
-      }
-      function submitScore() {
+      var nRight, nWrong, acc, dataLen;
+      var dataset='';
+      var turn=-1;
+      var quizData=[];
+      var numQ=10;
 
-      }
-      function updateScore() {
-        $('#scr-correct').html('Correct: '+nRight);
-        $('#scr-incorrect').html('Incorrect: '+nWrong);
-        $('#scr-accuracy').html('Accuracy: '+acc+' %'); 
-      }
-      function getComment() {
-        var idx=Math.floor(Math.random() * 4444); 
-        $.getJSON("/ytcmt/"+idx, function(data) {
-            $('#last-cmt').html('<i>[Last Comment] '+line+'</i>'); 
-            console.log('idx -- '+idx)
-            line = data.line;
-            console.log(line);
-            $('#cmt-line').html('<b>'+line+'</b>');
-            truth = data.truth;
-        });
-        acc = getAccuracy(nRight, nWrong);
-        updateScore();
-      } 
       function getAccuracy(nRight, nWrong) {
         if (nRight+nWrong == 0){
           return 0;
@@ -68,9 +20,91 @@
           return (nRight/(nRight+nWrong)*100).toFixed(2);
         }
       }
-      $(document).ready(function() {
+      function updateScore() {
+        acc = getAccuracy(nRight, nWrong);
+        $('#qn-number').html('Question: '+(turn+1)+'/'+numQ);
+        $('#scr-correct').html('Correct: '+nRight);
+        $('#scr-incorrect').html('Incorrect: '+nWrong);
+        $('#scr-accuracy').html('Score: '+acc+' %'); 
+      }
+      function guess(guessInt) {
+        quizData[turn].guess = guessInt;
+        if (quizData[turn].truth == guessInt) {
+          $('#ans-status').html("Correct - Nice");
+          nRight+=1;
+          nextOrEnd();
+        } else {
+          let wrongResp = (guessInt == 1) ? "Wrong, that was actually a fake comment.":"Wrong, that was a real comment.";
+          $('#ans-status').html(wrongResp);
+          nWrong+=1;
+          nextOrEnd();
+        }
+      }
+      function nextOrEnd() {
+        if (turn == numQ-1) {
+          updateScore();
+          endGame();
+        } else {
+          nextIter();
+        }
+      }
+      function endGame() {
+        let endLog = "Game finished, your score is "+acc+" % (Correct: "+nRight+" Wrong: "+nWrong+")"
+        $('#end-message').html(endLog);
+        console.log(endLog);
+        $(".quiz-screen").toggle();
+        $(".end-screen").toggle();
+      }
+      function submitScore() {
+        //TO-DO
+      }
+      function mainMenu() {
+        quizData = [];
+        turn = -1;
+        nRight, nWrong=0;
+        updateScore();
+        $('#ans-status').html("");
+        $(".end-screen").toggle();
+        $(".start-screen").toggle();
+      }
+      function startGame(name) {
+        dataset=name;
+        $.getJSON("/labels_meta", function(data) {
+          dataLen=data[dataset].shape
+          console.log('dataset now: '+dataset, '  dataset length: '+dataLen);
+          $(".start-screen").toggle();
+          $(".quiz-screen").toggle();
+          newGame();
+        });
+      }
+      function getComment() {
+        $('#cmt-line').html('<b>'+quizData[turn].line+'</b>');
+        let lastLine = (turn > 0) ? '<i>[Last Comment] '+quizData[turn-1].line+'</i>':"";
+        $('#last-cmt').html(lastLine); 
+      }
+      function nextIter() {
+        turn++;
         getComment();
-        })
+        updateScore();
+      }
+      function newGame() {
+        turn=-1;
+        nRight=0;
+        nWrong=0;
+        idxList=d3.shuffle(d3.range(0,dataLen,1)).slice(0,numQ);
+        for (i = 0; i < numQ; i++) {
+          let rowIdx = idxList[i];
+          $.getJSON("/labels/"+dataset+"/"+rowIdx, function(data) {
+              let rowData = {index:data.index, author:data.author, comment:data.comment, line:data.line, truth:data.truth}
+              quizData.push(rowData);
+              if (quizData.length == 1) {
+                nextIter();
+              }
+          });
+        }
+      }
+      
+
 
     </script>
   </head>

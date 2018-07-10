@@ -38,8 +38,14 @@ class Kompas(Resource):
         result = dict(zip(cols,list(query)))
         return jsonify(result)
 
-api.add_resource(Popular_Magazine, '/labels/pop_mag/<idx>') # Route_3
+class Labels(Resource):
+    def get(self):
+    	result = {'kompas':{'shape':2090}, 'pop_mag':{'shape':4444}}
+    	return jsonify(result)
+
+api.add_resource(Popular_Magazine, '/labels/pop_mag/<idx>')
 api.add_resource(Kompas, '/labels/kompas/<idx>')
+api.add_resource(Labels, '/labels_meta/')
 
 if __name__ == "__main__":
     app.run(debug=True)
