@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta content="initial-scale=1, width=device-width" name="viewport"/>
+    <title>{% block title %}{% endblock %}</title>
+    <script src="https://d3js.org/d3.v5.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-csv/0.71/jquery.csv-0.71.min.js"></script>
+    <script>
+      var truth = -1;
+      var nRight = 0;
+      var nWrong = 0;
+      var acc = 0;
+      var line= "";
+      function guessReal() {
+        if (truth == 1) {
+          $('#ans-status').html("Correct - Nice");
+          nRight+=1;
+          getComment();
+        } else {
+          $('#ans-status').html("Wrong, that was actually a fake comment.");
+          nWrong+=1;
+          getComment();
+        }
+      }
+      function guessFake() {
+        if (truth == 0) {
+          $('#ans-status').html("Correct - Nice");
+          nRight+=1;
+          getComment();
+        } else {
+          $('#ans-status').html("Wrong, that was a real comment.");
+          nWrong+=1;
+          getComment();
+        }
+      }
+      function resetScore() {
+        nRight = 0;
+        nWrong = 0;
+        acc = getAccuracy(nRight, nWrong);
+        updateScore();
+      }
+      function submitScore() {
+
+      }
+      function updateScore() {
+        $('#scr-correct').html('Correct: '+nRight);
+        $('#scr-incorrect').html('Incorrect: '+nWrong);
+        $('#scr-accuracy').html('Accuracy: '+acc+' %'); 
+      }
+      function getComment() {
+        var idx=Math.floor(Math.random() * 4444); 
+        $.getJSON("/ytcmt/"+idx, function(data) {
+            $('#last-cmt').html('<i>[Last Comment] '+line+'</i>'); 
+            console.log('idx -- '+idx)
+            line = data.line;
+            console.log(line);
+            $('#cmt-line').html('<b>'+line+'</b>');
+            truth = data.truth;
+        });
+        acc = getAccuracy(nRight, nWrong);
+        updateScore();
+      } 
+      function getAccuracy(nRight, nWrong) {
+        if (nRight+nWrong == 0){
+          return 0;
+        } else {
+          return (nRight/(nRight+nWrong)*100).toFixed(2);
+        }
+      }
+      $(document).ready(function() {
+        getComment();
+        })
+
+    </script>
+  </head>
+  <body>
+    {% block body %}{% endblock %}
+  </body>
+</html>
