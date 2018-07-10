@@ -5,7 +5,7 @@
     <title>{% block title %}{% endblock %}</title>
     <script src="https://d3js.org/d3.v5.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-csv/0.71/jquery.csv-0.71.min.js"></script>
+<!--     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-csv/0.71/jquery.csv-0.71.min.js"></script> -->
     <script>
       var nRight, nWrong, acc, dataLen;
       var dataset='';
@@ -70,7 +70,9 @@
       function startGame(name) {
         dataset=name;
         $.getJSON("/labels_meta", function(data) {
-          dataLen=data[dataset].shape
+          dataLen=data[dataset].shape;
+          let infoDataset = "<i>(Training Data: <a href="+data[dataset].source+">"+data[dataset].source+"</a>)</i>";
+          $('#info-dataset').html(infoDataset);
           console.log('dataset now: '+dataset, '  dataset length: '+dataLen);
           $(".start-screen").toggle();
           $(".quiz-screen").toggle();

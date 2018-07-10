@@ -40,7 +40,10 @@ class Kompas(Resource):
 
 class Labels(Resource):
     def get(self):
-    	result = {'kompas':{'shape':2090}, 'pop_mag':{'shape':4444}}
+    	result = {'kompas':{'shape':2090,
+    						'source':"https://www.youtube.com/user/KompasTVNews"},
+    			  'pop_mag':{'shape':4444,
+    			  			 'source':"https://www.youtube.com/user/PopularMagazine"}}
     	return jsonify(result)
 
 api.add_resource(Popular_Magazine, '/labels/pop_mag/<idx>')
