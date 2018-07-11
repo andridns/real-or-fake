@@ -7,12 +7,13 @@
     <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
 <!--     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-csv/0.71/jquery.csv-0.71.min.js"></script> -->
     <script>
-      var nRight, nWrong, acc, dataLen;
+      const numQ=20;
+      var nRight, nWrong, acc, dataLen, turn;
       var dataset, tableStr="";
-      var turn=-1;
+      var userName="Anon";
+      // var turn=-1;
       var quizData=[];
-      var numQ=10;
-
+      
       function getAccuracy(nRight, nWrong) {
         if (nRight+nWrong == 0){
           return 0;
@@ -50,12 +51,13 @@
         }
       }
       function endGame() {
-        let endLog = "Game finished, your score is "+acc+" % <br/> (Correct: "+nRight+" Wrong: "+nWrong+")"
+        let endLog = "Game Finished! Your score is "+acc+" % <br/> (Correct: "+nRight+" Wrong: "+nWrong+")"
         $('#end-message').html(endLog);
         $(".quiz-screen").toggle();
         scoreTable();
         createTable();
         $(".end-screen").toggle();
+        appendQuiz();
       }
       function submitScore() {
         //TO-DO
@@ -100,7 +102,8 @@
         for (i = 0; i < numQ; i++) {
           let rowIdx = idxList[i];
           $.getJSON("/labels/"+dataset+"/"+rowIdx, function(data) {
-              let rowData = {dataset: dataset, 
+              let rowData = {user_name: userName,
+                            dataset: dataset, 
                             index:data.index, 
                             author:data.author, 
                             comment:data.comment, 
@@ -147,6 +150,19 @@
       function toggleTable() {
         $('#scr-table').toggle();
       }
+      function appendQuiz() {
+        // construct an HTTP request
+        var xhr = new XMLHttpRequest();
+        xhr.open('POST', '/append_quiz', true);
+        xhr.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');
+        // send the collected data as JSON
+        xhr.send(JSON.stringify({data:quizData}));
+        console.log('Quiz Appended.')
+      }
+
+
+
+
     </script>
   </head>
   <body>
