@@ -9,8 +9,8 @@ import sqlite3
 app = Flask(__name__)
 api = Api(app)
 
-# PATH = '/var/www/RoF/RoF/' # server
-PATH = 'C:/Users/adsasmita/Desktop/RoF/RoF/' # local
+PATH = '/var/www/RoF/RoF/' # server
+# PATH = 'C:/Users/adsasmita/Desktop/RoF/RoF/' # local
 cols = ['index','line','truth']
 DB_PATH = PATH+"db/"
 
