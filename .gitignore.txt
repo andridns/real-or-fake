@@ -1,0 +1,6 @@
+RoF/db/
+RoF/static/csv
+char-rnn/checkpoints
+char-rnn/copypasta
+char-rnn/csv
+char-rnn/txt
