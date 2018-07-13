@@ -58,8 +58,8 @@
         if (acc <= 60) {endLog="Cool "+userName+",<br/>y";} else
         if (acc <= 70) {endLog="That's pretty good "+userName+",<br/>y";} else
         if (acc <= 80) {endLog="Wow you're really good at this "+userName+",<br/>y";} else
-        if (acc <= 95) {endLog="GGWP "+userName+"!!<br/>Y"; } else {endLog="XD NICE CHEAT U GOT THERE M8!1!<br/>Y";}
-        $('#end-message').html(endLog+"our score is "+acc+" % <br/><i> (<font color='green'>Correct: "+nRight+"</font><font color='red'> Wrong: "+nWrong+"</font>)</i>");
+        if (acc <= 95) {endLog="GG "+userName+"!<br/>Y"; } else {endLog="XD NICE CHEAT U GOT THERE M8,<br/>Y";}
+        $('#end-message-head').html(endLog+"our score is "+acc+" % <i>(Dataset: "+dataset+")");
         $(".quiz-screen").toggle();
         scoreTable();
         createTable();
@@ -79,7 +79,7 @@
       function startGame(name) {
         userName = $("input[name=user-name]").val();
         if (userName == "") {
-          $('#name-check').html("<i><font color='red'>C'mon bruh...</font></i>");
+          $('#name-check').html("<font color='red'><= <i>C'mon bruh...</font></i>");
         } else {
           dataset=name;
           $.getJSON("/labels_meta", function(data) {
@@ -123,7 +123,7 @@
         }
       }
       function scoreTable() {
-        tableStr = "";
+        tableStr = "<h4><font color='green'>Correct: "+nRight+"</font><font color='red'> Wrong: "+nWrong+"</font></i></h4>";
         // Table header
         let headerKeys = ["#","Line","Guess","Truth","Correct"]
         tableStr += "<table border==\"10\"><tr>";
