@@ -50,14 +50,16 @@
       }
       function endGame() {
         let endLog;
-        if (acc <= 20) {endLog="You're almost there "+userName+",";} else
-        if (acc <= 30) {endLog="LUL," ;} else
-        if (acc <= 50) {endLog="Okay "+userName+",";} else
-        if (acc <= 60) {endLog="Cool "+userName+",";} else
-        if (acc <= 70) {endLog="That's pretty good "+userName+",";} else
-        if (acc <= 80) {endLog="Wow you're really good at this "+userName+",";} else
-        if (acc <= 90) {endLog="GG "+userName+"!"; } else {endLog="NICE CHEAT U GOT THERE M8,";}
-        $('#end-message').html(endLog+"<br/>your score is "+acc+" % <br/><i> (<font color='green'>Correct: "+nRight+"</font><font color='red'> Wrong: "+nWrong+"</font>)</i>");
+        if (acc <= 5) {endLog="OMEGALUL3DXDXDXD!!1!! <br/>Y";} else
+        if (acc <= 20) {endLog="Almost there... I know you want it... <br/>Y";} else
+        if (acc <= 30) {endLog="LUL3D, <br/>Y";} else
+        if (acc <= 40) {endLog="LUL,<br/>Y" ;} else
+        if (acc <= 50) {endLog="Okay "+userName+",<br/>y";} else
+        if (acc <= 60) {endLog="Cool "+userName+",<br/>y";} else
+        if (acc <= 70) {endLog="That's pretty good "+userName+",<br/>y";} else
+        if (acc <= 80) {endLog="Wow you're really good at this "+userName+",<br/>y";} else
+        if (acc <= 95) {endLog="GG "+userName+"!<br/>Y"; } else {endLog="XD NICE CHEAT U GOT THERE M8,<br/>Y";}
+        $('#end-message').html(endLog+"our score is "+acc+" % <br/><i> (<font color='green'>Correct: "+nRight+"</font><font color='red'> Wrong: "+nWrong+"</font>)</i>");
         $(".quiz-screen").toggle();
         scoreTable();
         createTable();
@@ -93,9 +95,6 @@
       }
       function getComment() {
         $('#cmt-line').html('<b>'+quizData[turn].line+'</b>');
-        // console.log(quizData[turn].truth)
-        // let lastLine = (turn > 0) ? '<i>[Last Comment] <br/>'+quizData[turn-1].line+'</i>':"";
-        // $('#last-cmt').html(lastLine); 
       }
       function nextIter() {
         turn++;
