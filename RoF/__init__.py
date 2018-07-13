@@ -15,8 +15,6 @@ cols = ['index','line','truth']
 DB_PATH = PATH+"db/"
 
 def timenow(): return datetime.utcnow()
-# def dt2id(dt): return int((dt-datetime(2018,7,11)).total_seconds()*10000)
-# def id2dt(dtid): return datetime(2018,7,11)+timedelta(seconds=dtid/10000)
 
 @app.route("/")
 def index():
@@ -25,7 +23,6 @@ def index():
 @app.route('/append_quiz', methods=['POST'])
 def append_quiz():
     dt = timenow()
-    # dtid = dt2id(dt)
     conn = sqlite3.connect(DB_PATH+'Records.db')
     conn.isolation_level = None
     d = conn.cursor()
@@ -33,12 +30,7 @@ def append_quiz():
     for row in rows:
         user_name, dataset, line_index, line, correct = row['user_name'], row['dataset'], row['index'], row['line'], row['correct']
         d.execute("""INSERT INTO Records (Datetime, UserName, Dataset, LineIndex, Line, Correct) VALUES (?,?,?,?,?,?)""", (dt, user_name, dataset, line_index, line, correct))
-    #row = request.json['data'][0]
-    #user_name, dataset, line_index, line, correct = row['user_name'], row['dataset'], row['index'], row['line'], row['correct']
-    #resp = {'resp': d.execute("SELECT * FROM Records").fetchall()}
-    #d.execute("""INSERT INTO Records (Datetime, UserName, Dataset, LineIndex, Line, Correct) VALUES (?,?,?,?,?,?)""", (dt, user_name, dataset, line_index, line, correct))
     conn.close()
-    #print(resp)
     return ""
 
 class Labels(Resource):
@@ -70,24 +62,3 @@ api.add_resource(Labels_Meta, '/labels_meta/')
 
 if __name__ == "__main__":
 	app.run(host="0.0.0.0", port=int(9001), debug=True)
-
-
-
-# class Popular_Magazine(Resource):
-#     def get(self, idx):
-#         conn = sqlite3.connect(DB_PATH+'pop_mag.db')
-#         qstr = f"select * from popMag WHERE id={idx}"
-#         query = conn.execute(qstr).fetchall()[0]
-#         result = dict(zip(cols,list(query)))
-#         return jsonify(result)
-
-# class Kompas(Resource):
-#     def get(self, idx):
-#         conn = sqlite3.connect(DB_PATH+'kompas.db')
-#         qstr = f"select * from kompas WHERE id={idx}"
-#         query = conn.execute(qstr).fetchall()[0]
-#         result = dict(zip(cols,list(query)))
-#         return jsonify(result)
-
-# api.add_resource(Popular_Magazine, '/labels/pop_mag/<idx>')
-# api.add_resource(Kompas, '/labels/kompas/<idx>')
