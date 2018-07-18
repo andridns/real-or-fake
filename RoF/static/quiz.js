@@ -4,14 +4,46 @@ var dataset, tableStr, ldbTableStr="";
 var userName="Anon";
 var quizData=[];
 var ldbData=[];
+var isValidName = false;
 
-function getAccuracy(nRight, nWrong) {
-  if (nRight+nWrong == 0){
-    return 0;
+function validateName() {
+  userName = $("input[name=user-name]").val();
+  if (userName == "") {
+    $('#name-check').html(`<= <i>C'mon bruh...</i>`);
   } else {
-    return (nRight/(nRight+nWrong)*100).toFixed(2);
+    $('#name-check').html("");
+    isValidName = true;
   }
 }
+
+function startGame(name) {
+  userName = $("input[name=user-name]").val();
+  if (userName == "") {
+    $('#name-check').html(`<font color='red'><= <i>C'mon bruh...</font></i>`);
+  } else {
+    dataset=name;
+    $.getJSON("/labels_meta", function(data) {
+      dataLen=data[dataset].shape;
+      let infoDataset = `<i>(Source: <a href=${data[dataset].source}>${data[dataset].name}</a>)</i>`;
+      $('#info-dataset').html(infoDataset);
+      $(".start-screen").toggle();
+      $(".quiz-screen").toggle();
+      newGame();
+    });
+    $('#name-check').html("");
+  }
+}
+
+
+
+
+
+
+function getAccuracy(nRight, nWrong) {
+  if (nRight+nWrong == 0){return 0;}
+  else {return (nRight/(nRight+nWrong)*100).toFixed(2);}
+}
+
 function updateScore() {
   acc = getAccuracy(nRight, nWrong);
   $('#qn-number').html('Question: '+(turn+1)+'/'+numQ);
@@ -69,25 +101,9 @@ function mainMenu() {
   $(".end-screen").toggle();
   $(".start-screen").toggle();
 }
-function startGame(name) {
-  userName = $("input[name=user-name]").val();
-  if (userName == "") {
-    $('#name-check').html("<font color='red'><= <i>C'mon bruh...</font></i>");
-  } else {
-    dataset=name;
-    $.getJSON("/labels_meta", function(data) {
-      dataLen=data[dataset].shape;
-      let infoDataset = "<i>(Source: <a href="+data[dataset].source+">"+data[dataset].name+"</a>)</i>";
-      $('#info-dataset').html(infoDataset);
-      $(".start-screen").toggle();
-      $(".quiz-screen").toggle();
-      newGame();
-    });
-    $('#name-check').html("");
-  }
-}
+
 function getComment() {
-  $('#cmt-line').html('<b>'+quizData[turn].line+'</b>');
+  $('#cmt-line').html(`<b>${quizData[turn].line}</b>`);
 }
 function nextIter() {
   turn++;
