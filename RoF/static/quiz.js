@@ -1,10 +1,54 @@
 const numQ=20;
 var nRight, nWrong, acc, dataLen, turn;
-var dataset, tableStr, ldbTableStr="";
+var dataSource, dataName, tableStr, ldbTableStr="";
 var userName="Anon";
 var quizData=[];
 var ldbData=[];
+var idxList=[];
 var isValidName = false;
+var dataset="bulldog";
+
+
+
+function startGame2() {
+    new Promise(function(resolve,reject) {
+        validateName();
+        if(isValidName)
+        {
+            resolve('valid player name');
+        }
+    })
+    .then(getMeta())
+    .then(resetScore())
+    .then(getRandIndices())
+    .then(getQuestions())
+    .then(function() {
+      let infoDataset = `<i>(Source: <a href=${dataSource}>${dataName}</a>)</i>`;
+      $('#info-dataset').html(infoDataset);
+      $(".start-screen").toggle();
+      $(".quiz-screen").toggle();
+    });
+    //.then(nextIter());
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 function validateName() {
   userName = $("input[name=user-name]").val();
@@ -15,7 +59,68 @@ function validateName() {
     isValidName = true;
   }
 }
+function getMeta() {
+  $.getJSON("/labels_meta", function(data) {
+        dataLen=data[dataset].shape;
+        dataSource=data[dataset].source;
+        dataName=data[dataset].name;
+  });
+}
+function resetScore() {
+  turn=-1;
+  nRight=0;
+  nWrong=0;
+}
+function getRandIndices() {
+  idxList=d3.shuffle(d3.range(0,dataLen,1)).slice(0,numQ);
+  console.log('userName:'+userName,'dataset:'+dataset,'dataLen:'+dataLen,'IDs:'+idxList);  
+}
+function getQuestions() {
+  for (i = 0; i < numQ; i++) {
+    let rowIdx = idxList[i];
+    $.getJSON("/labels/"+dataset+"/"+rowIdx, function(data) {
+      let rowData = {user_name: userName,
+                    dataset: dataset,
+                    index:data.index,
+                    line:data.line,
+                    truth:data.truth}
+      quizData.push(rowData);
+    });
+  }
+}
+function constructScoreTable() {
+  tableStr = "<h4><font color='green'>Correct: "+nRight+"</font><font color='red'> Wrong: "+nWrong+"</font></i></h4>";
+  // Table header
+  let headerKeys = ["#","Line","Guess","Truth","Correct"]
+  tableStr += "<table border==\"10\"><tr>";
+  for (let i=0; i<headerKeys.length; i++) {
+    tableStr += '<td>' + headerKeys[i] + '</td>';
+  }
+  tableStr += "</tr>";
+  // Table rows
+  let keys = ["line","guess","truth","correct"];
+  for (let i=0; i<quizData.length; i++) {
+    tableStr += '<tr>';
+    if (quizData[i].correct==1) {
+      tableStr += '<td><font color="green">' + parseInt(i+1) + '</font></td>';
+      for (let j=0; j<keys.length; j++) {
+        tableStr += '<td><font color="green">' + quizData[i][keys[j]] + '</font></td>';
+      }
+    } else {
+      tableStr += '<td><font color="red">' + parseInt(i+1) + '</font></td>';
+      for (let j=0; j<keys.length; j++) {
+        tableStr += '<td><font color="red">' + quizData[i][keys[j]] + '</font></td>';
+      }
+    }
+    tableStr += '</tr>';
+  }
+  tableStr += "</table>";
+}
 
+
+
+
+//OLD
 function startGame(name) {
   userName = $("input[name=user-name]").val();
   if (userName == "") {
@@ -33,17 +138,10 @@ function startGame(name) {
     $('#name-check').html("");
   }
 }
-
-
-
-
-
-
 function getAccuracy(nRight, nWrong) {
   if (nRight+nWrong == 0){return 0;}
   else {return (nRight/(nRight+nWrong)*100).toFixed(2);}
 }
-
 function updateScore() {
   acc = getAccuracy(nRight, nWrong);
   $('#qn-number').html('Question: '+(turn+1)+'/'+numQ);
