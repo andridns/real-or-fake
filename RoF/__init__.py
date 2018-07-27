@@ -1,14 +1,12 @@
 import os
 import numpy as np
 import pandas as pd
-from flask import Flask, redirect, render_template, request
+from flask import Flask, redirect, render_template, request, session
+from flask_session import Session
 from flask_restful import Resource, Api
 from flask.json import jsonify
 from datetime import datetime, timedelta
 import sqlite3
-
-app = Flask(__name__)
-api = Api(app)
 
 # PATH = '/var/www/RoF/RoF/' # server
 PATH = 'C:/Users/adsasmita/Desktop/RoF/RoF/' # local
@@ -42,6 +40,15 @@ QUIZ_META = {'kompas':{
 			}
 
 def timenow(): return datetime.utcnow()
+
+# Configure app
+app = Flask(__name__)
+# Configure sessions
+app.config["SESSION_PERMANENT"] = False
+app.config["SESSION_TYPE"] = "filesystem"
+Session(app)
+# Configure API
+api = Api(app)
 
 @app.route("/")
 def index():
@@ -133,12 +140,27 @@ api.add_resource(Truth, '/api/truth/<dataset>/<idx>/')
 api.add_resource(Guess, '/api/guess/<dataset>/<idx>/<guess>')
 
 
+@app.route("/ask", methods=["POST"])
+def ask():
+	for item in request.args:
+		session[item] = request.args.get(item)
+	# dataset = request.args.get('dataset')
+	# idx = request.args.get('idx')
+	# guess = request.args.get('guess')
 
+	#return f"session: {str(session)},,,,{session.get('dataset')}, {session.get('idx')}, {session.get('guess')}"
+	return redirect(f"/api/get_ids/{session.get('dataset')}")
 
+@app.route("/two")
+def two():
+	return render_template("2.html")
 
+@app.route("/quiz/<dataset>", methods=["GET","POST"])
+def quiz(dataset):
+	for item in request.args:
+		session[item] = request.args.get(item)
 
-
-
+	return render_template("quiz.html", dataset=dataset, name=session.get('name'))
 
 
 if __name__ == "__main__":
