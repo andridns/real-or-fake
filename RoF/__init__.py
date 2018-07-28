@@ -9,7 +9,9 @@ from datetime import datetime, timedelta
 import sqlite3
 
 # PATH = '/var/www/RoF/RoF/' # server
-PATH = 'C:/Users/adsasmita/Desktop/RoF/RoF/' # local
+# PATH = 'C:/Users/adsasmita/Desktop/RoF/RoF/' # local
+PATH = 'C:/Users/andri/Desktop/RoF/RoF/RoF/' # local' # local apt
+
 cols = ['index','line','truth']
 DB_PATH = PATH+"db/"
 QUIZ_META = {'kompas':{
@@ -93,8 +95,8 @@ class Leaderboards(Resource):
         return jsonify(resdict)
     
 class Labels_Meta(Resource):
-	def get(self, dataset):
-		return jsonify(QUIZ_META[dataset])
+	def get(self):
+		return jsonify(QUIZ_META)
 
 api.add_resource(Labels, '/labels/<dataset>/<idx>')
 api.add_resource(Labels_Meta, '/labels_meta/')
